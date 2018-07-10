@@ -1,0 +1,10 @@
+Package: GS
+Title: Help to prepare the data to analysis the Genomic data in GS
+Version: 0.1
+Authors@R: person("Fei", "Deng", email = "fdeng@kangpusen.com", 
+  role = c("aut", "cre"))
+Description: You tell me.
+Depends: R (>= 3.1.0)
+License: What license is it under?
+LazyData: true
+RoxygenNote: 6.0.1
