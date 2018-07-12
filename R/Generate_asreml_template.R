@@ -9,10 +9,10 @@
 #'
 
 Generate_asreml_template <- function(dat){
-  a <- capture.output(paste(cat("WORKSPACE 4G !RENAME !ARGS // !DOPART $1 \nTitle:",substitute(dat),"\n\n"),
+  a <- capture.output(paste(cat("WORKSPACE 16G !RENAME !ARGS // !DOPART $1 \nTitle:",substitute(dat),"\n\n"),
           cat(as_temp(dat),"\n"),
-          cat(substitute(dat),"!skip 1 \n \ny  ~ mu ,\n!r ","ID","\nresidual units\n#"), sep = ""))
-  write.table(a,"Model-dave.as",col.names = F,row.names = F,quote = F)
+          cat(substitute(dat),"!skip 1 \n \ny  ~ mu ,\n!r ","giv(ID)","\nresidual units\n#"), sep = ""))
+  write.table(a,"dat_model.as",col.names = F,row.names = F,quote = F)
 }
 
 
