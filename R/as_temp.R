@@ -12,7 +12,7 @@ as_temp <- function(dat){
     # i =1
     if(is.factor(dat[,i])){cat(paste(names(dat)[i],"!A",nlevels(dat[,i]),"\n"))}
     else{
-      cat(paste(names(dat)[i],"\n"))
+      cat(paste(names(dat)[i],"\n","\nginv.giv  ID"))
     }
   }
 }
