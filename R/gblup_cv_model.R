@@ -4,28 +4,25 @@
 #' @param inv contains three columns that is ginv or ainv: row, col, inverse_values
 #' @return result
 #' @examples
-#'
-
-gblup_cv_model <- function(pheno_data,inv){
+gblup_cv_model <- function(dd,ainv){
   library(asreml)
-  dd <- pheno_data
-  ainv <- inv
   names(dd) <- c("ID","y")
   dd$ID <- as.factor(as.character(dd$ID))
   row.names(dd) <- dd$ID
   library(caret)
+  set.seed(12345)
   w <- createFolds(1:length(dd$ID),k = 5)
   r_pearson <- NULL
   r_spearman <- NULL
   r_unbiased <- NULL
   r_MSD <- NULL
   for(i in 1:5){
+    tt = dd
     vv <- dd$ID[w[[i]]]
     vv <- as.character(vv)
-    tt <- dd
     tt[vv,]$y <- NA #将测试集观测值为NA
-    mod <- asreml(y ~ 1, random=~ giv(ID),ginverse= list(ID=ainv),data=tt,workspace=1e8)
-    gblup <- predict(mod,"ID")$predictions$pval
+    mod <- asreml(y ~ 1, random=~ giv(ID),ginverse= list(ID=ainv),data=tt,workspace=4e8)
+    gblup <- predict(mod,"ID",pworkspace=5e8)$predictions$pval
     rownames(gblup) <- gblup$ID
     r_pearson[i] <- cor(gblup[vv,]$predicted.value,dd[vv,]$y,method = "pearson")
     r_spearman[i] <- cor(gblup[vv,]$predicted.value,dd[vv,]$y,method = "spearman")
