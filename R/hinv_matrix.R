@@ -22,6 +22,7 @@ hinv_matrix <- function(M012,ped_full){
   iG <- ginv(G)
   rownames(iG) <- colnames(iG) <- rownames(G)
 
+
   # library(asreml)
   # A_inv <- asreml.Ainverse(ped_full)$ginv
   # iA <- asreml.sparse2mat(A_inv)
@@ -32,11 +33,12 @@ hinv_matrix <- function(M012,ped_full){
 
   list.geno <- row.names(G)
   list.nongeno <- setdiff(id,list.geno)
+  iG1 <- iG[list.geno,list.geno]
 
   A22 <- A[list.geno,list.geno]
   iA22 <- ginv(A22)
-  rownames(iA22) <- colnames(iA22) <- row.names(A22)
-  x22 <- iG - iA22
+  rownames(iA22) = colnames(iA22) <- row.names(A22)
+  x22 <- iG1 - iA22
   iH11 <- iA[list.nongeno,list.nongeno]
   iH21 <- iA[list.geno,list.nongeno]
   iH12 <- t(iH21)

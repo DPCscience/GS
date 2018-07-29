@@ -82,7 +82,8 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(1,0,1,1)){
 
   iA22 <- ginv(A22)
   rownames(iA22) <- colnames(iA22) <- row.names(A22)
-  x22 <- tau*iG - omega*iA22
+  iG1 <- iG[list.geno,list.geno]
+  x22 <- tau*iG1 - omega*iA22
   iH11 <- iA[list.nongeno,list.nongeno]
   iH21 <- iA[list.geno,list.nongeno]
   iH12 <- t(iH21)
