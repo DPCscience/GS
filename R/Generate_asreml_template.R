@@ -9,7 +9,7 @@
 #'
 
 Generate_asreml_template <- function(dat){
-  a <- capture.output(paste(cat("WORKSPACE 6G !RENAME !out !ARGS 1 2 3 4 5 6 // !DOPART $1 \nTitle:",substitute(dat),"\n\n"),
+  a <- capture.output(paste(cat("!WORKSPACE 12 !RENAME !out !ARGS 1 2 3 4 5 6 // !DOPART $1 \nTitle:",substitute(dat),"\n\n"),
           cat(as_temp(dat),"\n"),
           cat(substitute(dat),"!skip 1\n
 \n!part 1\n!nodisplay\ny1  ~ mu ,\n!r ","giv(ID)","\nresidual units\npredict ID\n

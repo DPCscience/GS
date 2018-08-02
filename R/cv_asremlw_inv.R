@@ -17,7 +17,7 @@ cv_asremlw_inv <- function(dat,Hinv,seed=123){
   ginv <- write.relationshipMatrix(G,sorting = "ASReml",type="none")
   fwrite(ginv,"ginv.giv")
 
-  set.seed(seed) # 设置随机数
+  set.seed(seed)
   # dat <- dat3
   tt <- dat
   dd <- dat

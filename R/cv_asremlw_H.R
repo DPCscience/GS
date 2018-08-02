@@ -17,7 +17,7 @@ cv_asremlw_H <- function(dat,Gmatrix,seed=123){
   ginv <- write.relationshipMatrix(G,sorting = "ASReml",type="ginv")
   fwrite(ginv,"ginv.giv")
 
-  set.seed(seed) # 设置随机数
+  set.seed(seed)
   # dat <- dat3
   tt <- dat
   dd <- dat
@@ -61,7 +61,7 @@ cv_asremlw_H <- function(dat,Gmatrix,seed=123){
   r_spearman <- NULL
   r_unbiased <- NULL
   r_MSD <- NULL
-  dat[dat$y==0,]$y <- NA
+  # dat[dat$y==0,]$y <- NA
   for(i in 1:5){
     # dat_omit <- na.omit(dat)
     # x <- left_join(p_list[[i]],dat,"ID")
