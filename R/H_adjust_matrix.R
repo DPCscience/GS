@@ -34,28 +34,17 @@
 H_adjust_matrix <- function(M012,ped_full,alpha=0.95,beta=0.05){
   library(MASS)
   library(sommer)
-
   library(nadiv)
   A <- as.matrix(makeA(prepPed(ped_full)))
   id <- row.names(A)
-  iA <- ginv(A)
-  row.names(iA) = colnames(iA) = id
 
   G <- A.mat(M012-1)
   diag(G) <- diag(G) + 0.01
   iG <- ginv(G)
-  rownames(iG) <- colnames(iG) <- rownames(G)
-  genotyped=colnames(G)
 
-  # library(asreml)
-  # A_inv <- asreml.Ainverse(ped_full)$ginv
-  # iA <- asreml.sparse2mat(A_inv)
-  # A <- ginv(iA)
-  # id <- attr(A_inv,"rowNames")
-  # row.names(A) = colnames(A) = id
-  # row.names(iA) = colnames(iA) = id
+  rownames(iG) = colnames(iG) = genotyped
 
-  genotyped=colnames(G)
+  genotyped=rownames(G)
   inpedigree=colnames(A)
   nongenotyped=setdiff(inpedigree,genotyped)
 
@@ -70,8 +59,13 @@ H_adjust_matrix <- function(M012,ped_full,alpha=0.95,beta=0.05){
   genotyped=genotypedinpedigree
 
   Agg=matrix(NA,ncol(G),nrow(G))
+
+  genotyped <- as.character(genotyped)
+
   Agg=A[genotyped,genotyped]
-  Aggi <- ginv(Agg)
+  # Aggi <- ginv(Agg)
+  # Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
+  Aggi <- solve(Agg)
 
   meanG=mean(G)
   meandiagG=mean(diag(G))
@@ -88,6 +82,9 @@ H_adjust_matrix <- function(M012,ped_full,alpha=0.95,beta=0.05){
   colnames(H)=colnames(A)
   rownames(H)=rownames(A)
   H[genotyped,genotyped]=G #H22
+
+  nongenotyped <- as.character(nongenotyped)
+
   H[nongenotyped,genotyped]=A[nongenotyped,genotyped]%*%(Aggi%*%G) # H12
   H[genotyped,nongenotyped]=t(H[nongenotyped,genotyped]) # H21
   H[nongenotyped,nongenotyped]=A[nongenotyped,nongenotyped] +A[nongenotyped,genotyped]%*%(Aggi%*%(G-Agg)%*%Aggi)%*%A[genotyped,nongenotyped] # H11

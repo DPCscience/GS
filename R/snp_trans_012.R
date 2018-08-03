@@ -10,6 +10,10 @@
 #' snp_trans_012(gg)
 #'
 snp_trans_012 <- function(geno) {
+
+  Time = proc.time() # begin
+  cat("Begin... \n") # begin
+
   X <- matrix(0,dim(geno)[1],dim(geno)[2]/2)
   for(i in 1:dim(X)[2]){
     X[,i] <- paste(geno[,c(2*i-1)],geno[,2*i],sep = "")
@@ -24,5 +28,9 @@ snp_trans_012 <- function(geno) {
   library(snpReady)
   geno.ready <- raw.data(data = as.matrix(X), frame = "wide", base = TRUE, sweep.sample = 0.5, call.rate = 0.95, maf = 0.01, imput = FALSE)
   M <- geno.ready$M.clean
+
+  Time = as.matrix(proc.time() - Time) #end
+  cat("\n", "Completed! Time =", Time[3]/60, " minutes \n") #end
+
   return(M)
 }

@@ -20,42 +20,60 @@
 #'                         SNP8  = c(2,2,2,2,2,2,2,2,2,2,2,2,2,1),
 #'                         SNP9  = c(1,1,1,2,1,2,2,2,1,0,2,0,1,0),
 #'                         SNP10 = c(2,0,2,1,2,1,0,0,2,0,1,0,0,0))
-#'                         rm(list="animal")
-#'                         animal <- 1:26
-#'                         sire   <- c(rep(0,12), data.11.1$sire)
-#'                         dam    <- c(rep(0,12), data.11.1$dam)
-#'                         ped    <- data.frame(animal, sire, dam)
-#'                         rm(list=c("animal","dam","sire"))
-#'                         M <- data.11.1[6:14, c(1, 7:16)]
-#'                         rownames(M) <- M[, 1]
-#'                         M1 <- as.matrix(M[, -1])
-#'                         round(ginv(H_matrix(M1,ped)),2)
+#'rm(list="animal")
+#'animal <- 1:26
+#'sire   <- c(rep(0,12), data.11.1$sire)
+#'dam    <- c(rep(0,12), data.11.1$dam)
+#'ped_full    <- data.frame(animal, sire, dam)
+#'rm(list=c("animal","dam","sire"))
+#'M <- data.11.1[6:14, c(1, 7:16)]
+#'rownames(M) <- M[, 1]
+#'M012 <- as.matrix(M[, -1])
+#'idx <- as.character(1:26)
+#'H_matrix(M012,ped_full)[idx,idx] %>% solve %>% round(3)
 
 H_matrix <- function(M012,ped_full){
+
+  Time = proc.time() # begin
+  cat("Begin to build the Hinv matrix... \n\n") # begin
+
   library(MASS)
   library(sommer)
-
   library(nadiv)
+
+  Timex = proc.time() # begin
+
   A <- as.matrix(makeA(prepPed(ped_full)))
-  id <- row.names(A)
-  iA <- ginv(A)
-  row.names(iA) = colnames(iA) = id
+
+  Timex = as.matrix(proc.time() - Timex) #end
+  cat("\n", "A matrix takes time =", Timex[3]/60, " minutes \n") #end
+
+  # library(asreml)
+  # ainv <- asreml.Ainverse(ped_full)$ginv
+  # A <- solve(asreml.sparse2mat(ainv))
+  # rownames(A) <- colnames(A) <- attr(ainv,"rowNames")
+
+  Timex = proc.time() # begin
+  cat("Trans 012 to G matrix... \n\n") # begin
 
   G <- A.mat(M012-1)
   diag(G) <- diag(G) + 0.01
+
+  Timex = as.matrix(proc.time() - Timex) #end
+  cat("\n", "G matrix takes time =", Timex[3]/60, " minutes \n") #end
+
+  Timex = proc.time() # begin
+  cat("Begin to inverse the G matrix... \n\n") # begin
+
   iG <- ginv(G)
-  rownames(iG) <- colnames(iG) <- rownames(G)
-  genotyped=colnames(G)
 
-  # library(asreml)
-  # A_inv <- asreml.Ainverse(ped_full)$ginv
-  # iA <- asreml.sparse2mat(A_inv)
-  # A <- ginv(iA)
-  # id <- attr(A_inv,"rowNames")
-  # row.names(A) = colnames(A) = id
-  # row.names(iA) = colnames(iA) = id
+  Timex = as.matrix(proc.time() - Timex) #end
+  cat("\n", "Inverse G matrix takes time =", Timex[3]/60, " minutes \n") #end
 
-  genotyped=colnames(G)
+
+  genotyped=rownames(G)
+  rownames(iG) = colnames(iG) = genotyped
+
   inpedigree=colnames(A)
   nongenotyped=setdiff(inpedigree,genotyped)
 
@@ -70,8 +88,13 @@ H_matrix <- function(M012,ped_full){
   genotyped=genotypedinpedigree
 
   Agg=matrix(NA,ncol(G),nrow(G))
+
+  genotyped <- as.character(genotyped)
+
   Agg=A[genotyped,genotyped]
-  Aggi <- ginv(Agg)
+  # Aggi <- ginv(Agg)
+  # Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
+  Aggi=solve(Agg)
 
   meanG=mean(G)
   meandiagG=mean(diag(G))
@@ -80,18 +103,25 @@ H_matrix <- function(M012,ped_full){
   cat("Means G is:",meanG,";Means G diag is:",meandiagG,";Means Agg is:",meanAgg,";Means diag Agg is:",meandiagAgg,"\n")
   beta=(meandiagAgg-meanAgg)/(meandiagG-meanG)
   alpha=meandiagAgg-meandiagG*beta
-  cat("alpha and beta value:",alpha,beta,"\n")
+  cat("Not adjust, but the value of alpha and beta is:",alpha,beta,"\n")
   # G=alpha+beta*G
 
-  Aggi=solve(Agg)
+
   H=matrix(NA,ncol(A),nrow(A))
   colnames(H)=colnames(A)
   rownames(H)=rownames(A)
   H[genotyped,genotyped]=G #H22
+
+  nongenotyped <- as.character(nongenotyped)
+
   H[nongenotyped,genotyped]=A[nongenotyped,genotyped]%*%(Aggi%*%G) # H12
   H[genotyped,nongenotyped]=t(H[nongenotyped,genotyped]) # H21
   H[nongenotyped,nongenotyped]=A[nongenotyped,nongenotyped] +A[nongenotyped,genotyped]%*%(Aggi%*%(G-Agg)%*%Aggi)%*%A[genotyped,nongenotyped] # H11
   cat("H diag means is :",mean(diag(H)),"H means is:",mean(H),"\n")
+
+  Time = as.matrix(proc.time() - Time) #end
+  cat("\n", "Run Completed! Total time =", Time[3]/60, " minutes \n") #end
+
   return(H)
 }
 
