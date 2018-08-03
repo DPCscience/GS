@@ -43,29 +43,29 @@
 
 
 
-hinv_matrix <- function(M012,ped_full){
+hinv_matrix_asreml <- function(M012,ped_full){
 
   Time = proc.time() # begin
   cat("Begin to build the Hinv matrix... \n\n") # begin
 
   library(MASS)
   library(sommer)
+  library(asreml)
   library(nadiv)
 
   Timex = proc.time() # begin
   cat("Begin to build A matrix... \n\n") # begin
 
   A <- as.matrix(makeA(prepPed(ped_full)))
-  iA <- solve(A)
-  rownames(iA) <- colnames(iA) <- rownames(A)
 
   Timex = as.matrix(proc.time() - Timex) #end
   cat("\n", "A matrix takes time =", Timex[3]/60, " minutes \n") #end
 
-  # ainv <- asreml.Ainverse(ped_full)$ginv
-  # iA <- asreml.sparse2mat(ainv)
-  # inpedigree <- attr(ainv,"rowNames")
-  # row.names(iA) = colnames(iA) = inpedigree
+  ainv <- asreml.Ainverse(ped_full)$ginv
+  iA <- asreml.sparse2mat(ainv)
+
+  inpedigree <- attr(ainv,"rowNames")
+  row.names(iA) = colnames(iA) = inpedigree
 
   Timex = proc.time() # begin
   cat("Begin to build G matrix... \n\n") # begin
