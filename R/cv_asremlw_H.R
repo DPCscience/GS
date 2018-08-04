@@ -15,7 +15,7 @@ cv_asremlw_H <- function(dat,Gmatrix,seed=123){
   G <- Gmatrix
   fwrite(as.data.frame(row.names(G)),"id.csv")
   ginv <- write.relationshipMatrix(G,sorting = "ASReml",type="ginv")
-  fwrite(ginv,"ginv.giv")
+  fwrite(ginv,"Hinv.giv",col.names = FALSE)
 
   set.seed(seed)
   # dat <- dat3
