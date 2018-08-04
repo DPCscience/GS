@@ -65,7 +65,7 @@ H_matrix <- function(M012,ped_full){
   Timex = proc.time() # begin
   cat("Begin to inverse the G matrix... \n\n") # begin
 
-  iG <- ginv(G)
+  iG <- solve(G)
 
   Timex = as.matrix(proc.time() - Timex) #end
   cat("\n", "Inverse G matrix takes time =", Timex[3]/60, " minutes \n") #end
