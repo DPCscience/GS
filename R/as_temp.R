@@ -16,5 +16,5 @@ as_temp <- function(dat){
       cat(paste(names(dat)[i],"!M 0 \n"))
     }
   }
-  cat("\nginv.giv")
+  cat("\nHinv.giv")
 }
