@@ -121,7 +121,6 @@ H_matrix <- function(M012,ped_full){
 
   Time = as.matrix(proc.time() - Time) #end
   cat("\n", "H_matrix run Completed! Total time =", Time[3]/60, " minutes \n") #end
-  H <- as.data.frame(H)
   return(H)
 }
 

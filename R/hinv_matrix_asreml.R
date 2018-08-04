@@ -132,6 +132,6 @@ hinv_matrix_asreml <- function(M012,ped_full){
 
   Time = as.matrix(proc.time() - Time) #end
   cat("\n", "Completed! Time =", Time[3]/60, " minutes \n") #end
-  Hinv <- as.data.frame(Hinv)
+  Hinv <- as.matrix(Hinv)
   return(Hinv)
 }

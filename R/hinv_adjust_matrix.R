@@ -1,7 +1,7 @@
-#' Build the H-inverse-matrix from G-inverse-matrix and pedigree-full and pedigree-genotype#'
+#' a Build the H-inverse-matrix from G-inverse-matrix and pedigree-full and pedigree-genotype#'
 #' @param G_mat It is the matrix which has rownames and colnames(ID)
 #' @param ped_full It contains the full pedigree, it has three columns:ID,Sire,Dam
-#' @param ped_geno It contains the pedigree that has the genotype, it is a part of the ped_full pedigree
+#' @param w a,b,tau,omega, \tau[a*G + b*A22]^{-1} - \omega*A22^{-1}
 #' @return The H-inverse-matrix form the formula
 #' @examples
 #' animal  <- 13:26
@@ -34,41 +34,61 @@
 #'
 
 hinv_adjust_matrix <- function(M012,ped_full,wts=c(1,0,1,1)){
-  if (length(wts) != 4) stop("You need 4 wts (alpha, beta, tau, omega) in that order")
-  alpha = wts[1]
-  beta  = wts[2]
+  if (length(wts) != 4) stop("You need 4 wts (a, b, tau, omega) in that order")
+  a = wts[1]
+  b  = wts[2]
   tau   = wts[3]
   omega = wts[4]
 
+  Time = proc.time() # begin
+  cat("Begin to build the Hinv adjust matrix... \n\n") # begin
+
   library(MASS)
   library(sommer)
+  library(nadiv)
+
+  Timex = proc.time() # begin
+  cat("Begin to build A matrix... \n\n") # begin
+
+  A <- as.matrix(makeA(prepPed(ped_full)))
+  iA <- solve(A)
+  rownames(iA) <- colnames(iA) <- rownames(A)
+
+  Timex = as.matrix(proc.time() - Timex) #end
+  cat("\n", "A matrix takes time =", Timex[3]/60, " minutes \n") #end
+
+  Timex = proc.time() # begin
+  cat("Begin to build G matrix... \n\n") # begin
   G <- A.mat(M012-1)
 
-  # library(asreml)
-  # A_inv <- asreml.Ainverse(ped_full)$ginv
-  # iA <- asreml.sparse2mat(A_inv)
-  # A <- ginv(iA)
-  # id <- attr(A_inv,"rowNames")
-  # row.names(A) = colnames(A) = id
-  # row.names(iA) = colnames(iA) = id
+  Timex = as.matrix(proc.time() - Timex) #end
+  cat("\n", "G matrix takes time =", Timex[3]/60, " minutes \n") #end
 
-  library(nadiv)
-  A <- as.matrix(makeA(prepPed(ped_full)))
-  id <- row.names(A)
-  iA <- ginv(A)
-  row.names(iA) = colnames(iA) = id
+  diag(G) <- diag(G) + 0.01
+  genotyped=rownames(G)
 
-  list.geno <- row.names(M012)
-  list.nongeno <- setdiff(id,list.geno)
+  inpedigree=colnames(A)
+  nongenotyped=setdiff(inpedigree,genotyped)
 
-  iG <- ginv(G)
-  rownames(iG) <- rownames(G)
-  colnames(iG) <- rownames(G)
+  cat("In pedigree nongenotyped length: ",length(nongenotyped),"\n")
 
-  list.geno <- row.names(G)
-  list.nongeno <- setdiff(id,list.geno)
+  genotypednotinpedigree=setdiff(genotyped,inpedigree)
+  cat("genotyped not in pedigree",length(genotypednotinpedigree),"\n")
 
-  A22 <- A[list.geno,list.geno]
+  genotypedinpedigree=intersect(genotyped,inpedigree)
+  cat("genotyped in pedigree",length(genotypedinpedigree),"\n")
+
+  genotypedinpedigree <- as.character(genotypedinpedigree)
+
+  G=G[genotypedinpedigree,genotypedinpedigree]
+  genotyped=genotypedinpedigree
+
+
+  genotype <- as.character(genotyped)
+  nongenotyped <- as.character(nongenotyped)
+
+  A22 <- A[genotype,genotype]
+  iA22 <- solve(A22)
 
   meanG=mean(G)
   meandiagG=mean(diag(G))
@@ -77,17 +97,30 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(1,0,1,1)){
   cat("Means G is:",meanG,";Means G diag is:",meandiagG,";Means A22 is:",meanAgg,";Means diag A22 is:",meandiagAgg,"\n")
   beta=(meandiagAgg-meanAgg)/(meandiagG-meanG)
   alpha=meandiagAgg-meandiagG*beta
-  cat("alpha and beta value:",alpha,beta,"\n")
+  cat("Adjust G, and the value of alpha and beta is:",alpha,beta,"\n")
   G=alpha+beta*G # 调整后的G
 
-  iA22 <- ginv(A22)
-  rownames(iA22) <- colnames(iA22) <- row.names(A22)
-  iG1 <- iG[list.geno,list.geno]
+  G = a*G + b*A22
+
+  Timex = proc.time() # begin
+  cat("Begin to inverse G matrix... \n\n") # begin
+
+  iG <- solve(G)
+  rownames(iG) = colnames(iG) = genotyped
+
+  Timex = as.matrix(proc.time() - Timex) #end
+  cat("\n", "Inverse G matrix takes time =", Timex[3]/60, " minutes \n") #end
+
+  iG1 <- iG[genotype,genotype]
+  rownames(iA22) = colnames(iA22) <- row.names(A22)
   x22 <- tau*iG1 - omega*iA22
-  iH11 <- iA[list.nongeno,list.nongeno]
-  iH21 <- iA[list.geno,list.nongeno]
+  iH11 <- iA[nongenotyped,nongenotyped]
+  iH21 <- iA[genotype,nongenotyped]
   iH12 <- t(iH21)
-  iH22 <- x22
-  Hinv <- cbind(rbind(iH11,iH21),rbind(iH12,x22))
+  iH22 <-  iA[genotype,genotype] + x22
+  Hinv <- cbind(rbind(iH11,iH21),rbind(iH12,iH22))
+
+  Time = as.matrix(proc.time() - Time) #end
+  cat("\n", "hinv_matrix completed! total time =", Time[3]/60, " minutes \n") #end
   return(Hinv)
 }
