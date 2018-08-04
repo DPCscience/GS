@@ -131,7 +131,7 @@ hinv_matrix <- function(M012,ped_full){
   Hinv <- cbind(rbind(iH11,iH21),rbind(iH12,iH22))
 
   Time = as.matrix(proc.time() - Time) #end
-  cat("\n", "Completed! Time =", Time[3]/60, " minutes \n") #end
+  cat("\n", "hinv_matrix completed! total time =", Time[3]/60, " minutes \n") #end
   Hinv <- as.data.frame(Hinv)
   return(Hinv)
 }

@@ -120,7 +120,7 @@ H_matrix <- function(M012,ped_full){
   cat("H diag means is :",mean(diag(H)),"H means is:",mean(H),"\n")
 
   Time = as.matrix(proc.time() - Time) #end
-  cat("\n", "Run Completed! Total time =", Time[3]/60, " minutes \n") #end
+  cat("\n", "H_matrix run Completed! Total time =", Time[3]/60, " minutes \n") #end
   H <- as.data.frame(H)
   return(H)
 }
