@@ -1,4 +1,4 @@
-#' Build the H-matrix from G-inverse-matrix and pedigree-full and pedigree-genotype, It calculate \alpha and \bera based the function of the matrix G_22 and A_22
+#' Build the H-matrix from G-inverse-matrix and pedigree-full and pedigree-genotype, It calculate alpha and bera based the function of the matrix G_22 and A_22
 #' @param M012 It is the matrix which has rownames(ID), the first column is SNP infor, the SNP is 012 format.
 #' @param ped_full It contains the full pedigree, it has three columns:ID,Sire,Dam
 #' @return The H-matrix form the formula

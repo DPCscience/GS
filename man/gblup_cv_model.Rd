@@ -4,7 +4,7 @@
 \alias{gblup_cv_model}
 \title{Get the arrucacy and other values when run crossvalidation}
 \usage{
-gblup_cv_model(pheno_data, inv)
+gblup_cv_model(dd, ainv)
 }
 \arguments{
 \item{pheno_data}{contins two columns: ID and y}
@@ -16,7 +16,4 @@ result
 }
 \description{
 Get the arrucacy and other values when run crossvalidation
-}
-\examples{
-
 }

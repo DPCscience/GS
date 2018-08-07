@@ -1,7 +1,7 @@
 #' a Build the H-inverse-matrix from G-inverse-matrix and pedigree-full and pedigree-genotype#'
 #' @param G_mat It is the matrix which has rownames and colnames(ID)
 #' @param ped_full It contains the full pedigree, it has three columns:ID,Sire,Dam
-#' @param w a,b,tau,omega, \tau[a*G + b*A22]^{-1} - \omega*A22^{-1}
+#' @param w a,b,tau,omega, tau[a*G + b*A22]^{-1} - omega*A22^{-1}
 #' @return The H-inverse-matrix form the formula
 #' @examples
 #' animal  <- 13:26

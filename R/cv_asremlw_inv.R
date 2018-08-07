@@ -12,13 +12,12 @@ cv_asremlw_inv <- function(dat,Hinv,seed=123){
   library(caret)
   library(synbreed)
   dat <- unique(dat)
-  G <- Hinv
-  fwrite(as.data.frame(row.names(G)),"id.csv")
-  ginv <- write.relationshipMatrix(G,sorting = "ASReml",type="none")
+  ginv <- Hinv
   fwrite(ginv,"Hinv.giv",col.names = FALSE)
 
   set.seed(seed)
   # dat <- dat3
+  names(dat) <- c("ID","y")
   tt <- dat
   dd <- dat
 
@@ -58,9 +57,9 @@ cv_asremlw_inv <- function(dat,Hinv,seed=123){
   library(dplyr)
   p_list <- list(py1,py2,py3,py4,py5)
   r_pearson <- NULL
-  r_spearman <- NULL
+  # r_spearman <- NULL
   r_unbiased <- NULL
-  r_MSD <- NULL
+  # r_MSD <- NULL
   dat[dat$y==0,]$y <- NA
   for(i in 1:5){
     # dat_omit <- na.omit(dat)
@@ -69,21 +68,21 @@ cv_asremlw_inv <- function(dat,Hinv,seed=123){
     names(x) <- c("ID","pv","y")
     x <- na.omit(x)
     r_pearson[i] <- cor(x$pv,x$y,method = "pearson")
-    r_spearman[i] <- cor(x$pv,x$y,method = "spearman")
+    # r_spearman[i] <- cor(x$pv,x$y,method = "spearman")
     r_unbiased[i] <- summary(lm(x$y ~ x$pv -1))$coefficients[1]
-    r_MSD[i] <- mean((x$y - x$pv)^2)
+    # r_MSD[i] <- mean((x$y - x$pv)^2)
   }
   se <- function(x){
     sd(x)/sqrt(length(x))
   }
   r_pearson
   n1 <- mean(r_pearson);n1e <- se(r_pearson)
-  n2<- mean(r_spearman);n2e <- se(r_spearman)
+  # n2<- mean(r_spearman);n2e <- se(r_spearman)
   n3 <- mean(r_unbiased);n3e <- se(r_unbiased)
-  n4 <- mean(r_MSD);n4e <- se(r_MSD)
-  ax <- data.frame(type=c("r_pearson","r_spearman","r_unbiased","r_MSD"),
-                   value = c(n1,n2,n3,n4),
-                   se = c(n1e,n2e,n3e,n4e))
+  # n4 <- mean(r_MSD);n4e <- se(r_MSD)
+  ax <- data.frame(type=c("r_pearson","r_unbiased"),
+                   value = c(n1,n3),
+                   se = c(n1e,n3e))
   ax
   return(ax)
 }

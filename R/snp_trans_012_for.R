@@ -8,23 +8,22 @@
 #' row.names(gg) <- paste("ID",1:8,sep="")
 #' gg
 #' snp_trans_012(gg)
-#'
-snp_trans_012 <- function(geno) {
+#' snp_trans_012_for(gg)
+snp_trans_012_for <- function(geno) {
   Time = proc.time() # begin
   cat("Begin combine... \n")
   # geno <- gg
   geno <- as.matrix(geno)
-  genox <- geno
-  dim(geno) <- c(dim(geno)[1], 2, dim(geno)[2]/2)
-  X <- matrix(paste0(geno[, 1, ], geno[, 2, ]), ncol = dim(genox)[2]/2)
+  # genox <- geno
+  # dim(geno) <- c(dim(geno)[1], 2, dim(geno)[2]/2)
+  # X <- matrix(paste0(geno[, 1, ], geno[, 2, ]), ncol = dim(genox)[2]/2)
 
-  # X <- matrix(0,dim(geno)[1],dim(geno)[2]/2)
-  # for(i in 1:dim(X)[2]){
-  #   X[,i] <- paste(geno[,c(2*i-1)],geno[,2*i],sep = "")
-  # }
-  row.names(X) <- row.names(genox)
+  X <- matrix(0,dim(geno)[1],dim(geno)[2]/2)
+  for(i in 1:dim(X)[2]){
+    X[,i] <- paste(geno[,c(2*i-1)],geno[,2*i],sep = "")
+  }
+  row.names(X) <- row.names(geno)
   rm(geno)
-  rm(genox)
   colnames(X) <- paste("snp",1:dim(X)[2],sep = "")
   X[which(X=="11")] <- "AA"
   X[which(X=="12")] <- "AT"
