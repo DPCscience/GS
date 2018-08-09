@@ -12,6 +12,7 @@ cv_asremlw_H <- function(dat,Gmatrix,seed=123){
   library(caret)
   library(synbreed)
   dat <- unique(dat)
+  dat <- na.omit(dat)
   G <- Gmatrix
   fwrite(as.data.frame(row.names(G)),"id.csv")
   ginv <- write.relationshipMatrix(G,sorting = "ASReml",type="ginv")

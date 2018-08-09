@@ -13,7 +13,7 @@ as_temp <- function(dat){
     # i =1
     if(is.factor(dat[,i])){cat(paste(names(dat)[i],"!A",nlevels(dat[,i]),"!L id.csv !skip 1","\n"))}
     else{
-      cat(paste(names(dat)[i],"!M 0 \n"))
+      cat(paste(names(dat)[i],"!M -999 \n"))
     }
   }
   cat("\nHinv.giv")
