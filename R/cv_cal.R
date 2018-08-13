@@ -56,7 +56,7 @@ cv_cal <- function(dat.csv,h2=1){
     names(x) <- c("ID","pv","y")
     x <- na.omit(x)
     r_pearson[i] <- cor(x$pv,x$y,method = "pearson")/sqrt(h2)
-    r_unbiased[i] <- summary(lm(x$y ~ x$pv))$coefficients[1]
+    r_unbiased[i] <- lm(x$y ~ x$pv)$coefficients[2]
   }
   se <- function(x){
     sd(x)/sqrt(length(x))

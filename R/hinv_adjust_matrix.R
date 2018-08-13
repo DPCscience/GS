@@ -29,11 +29,11 @@
 #'                         M <- data.11.1[6:14, c(1, 7:16)]
 #'                         rownames(M) <- M[, 1]
 #'                         M1 <- as.matrix(M[, -1])
-#'                         round(hinv_matrix(M1,ped),2)
+#'                         round(hinv_adjust_matrix(M1,ped),2)
 #'
 #'
 
-hinv_adjust_matrix <- function(M012,ped_full,wts=c(1,0,1,1)){
+hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   if (length(wts) != 4) stop("You need 4 wts (a, b, tau, omega) in that order")
   a = wts[1]
   b  = wts[2]
@@ -41,6 +41,9 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(1,0,1,1)){
   omega = wts[4]
 
   Time = proc.time() # begin
+  cat("G* = a*G + b*A22, a is ",a,"; b is ",b,"\n")
+  cat("iG = tau*G - omega*A22, tau is ",tau,"; omega is ",omega,"\n")
+
   cat("Begin to build the Hinv adjust matrix... \n\n") # begin
 
   library(MASS)
@@ -48,7 +51,7 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(1,0,1,1)){
   library(nadiv)
 
   Timex = proc.time() # begin
-  cat("Begin to build A matrix... \n\n") # begin
+  cat("Begin to build A matrix... \n") # begin
 
   A <- as.matrix(makeA(prepPed(ped_full)))
   iA <- solve(A)
@@ -58,7 +61,7 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(1,0,1,1)){
   cat("\n", "A matrix takes time =", Timex[3]/60, " minutes \n") #end
 
   Timex = proc.time() # begin
-  cat("Begin to build G matrix... \n\n") # begin
+  cat("Begin to build G matrix... \n") # begin
   G <- A.mat(M012-1)
 
   Timex = as.matrix(proc.time() - Timex) #end
