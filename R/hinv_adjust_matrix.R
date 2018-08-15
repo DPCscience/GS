@@ -40,11 +40,11 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   tau   = wts[3]
   omega = wts[4]
 
-  Time = proc.time() # begin
+  Time = proc.time()
+
+  cat(rep("********",10),"\n")
   cat("G* = a*G + b*A22, a is ",a,"; b is ",b,"\n")
   cat("iG = tau*G - omega*A22, tau is ",tau,"; omega is ",omega,"\n")
-
-  cat("Begin to build the Hinv adjust matrix... \n\n") # begin
 
   library(MASS)
   library(sommer)
@@ -66,9 +66,19 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
 
   Timex = as.matrix(proc.time() - Timex) #end
   cat("\n", "G matrix takes time =", Timex[3]/60, " minutes \n") #end
-
   diag(G) <- diag(G) + 0.01
   genotyped=rownames(G)
+
+  diagG <- diag(G)
+
+  cat(rep("********",10),"\n")
+  options(digits = 2)
+  cat("Frequency - Diagonal of G\n","\tN:\t\t",length(diagG),"\n",
+      "\tMean:\t\t",mean(diagG),"\n",
+      "\tMin:\t\t",min(diagG),"\n",
+      "\tMax:\t\t",max(diagG),"\n",
+      "\tRange:\t\t",range(diagG),"\n")
+  options(digits = 7)
 
   inpedigree=colnames(A)
   nongenotyped=setdiff(inpedigree,genotyped)
@@ -91,17 +101,44 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   nongenotyped <- as.character(nongenotyped)
 
   A22 <- A[genotype,genotype]
+  diagA22 <- diag(A22)
+  offdiagA22 <- c(A22[upper.tri(A22)],A22[lower.tri(A22)])
+  options(digits = 2)
+  cat("Statistic of Rel Matrix A22\n","\t\t","N","\t","Mean","\t","Min","\t","Max","\t","Var","\n",
+      "Diagonal\t",length(diagA22),"\t",mean(diagA22),"\t",min(diagA22),"\t",max(diagA22),"\t",var(diagA22),
+      "\nOff-diagonal\t",length(offdiagA22),"\t",mean(offdiagA22),"\t",min(offdiagA22),"\t",max(offdiagA22),"\t",var(offdiagA22))
+  options(digits = 7)
+
+
+  diagG <- diag(G)
+  offdiagG <- c(G[upper.tri(G)],G[lower.tri(G)])
+  options(digits = 2)
+  cat("Statistic of Genomic Matrix\n","\t\t","N","\t","Mean","\t","Min","\t","Max","\t","Var","\n",
+      "Diagonal\t",length(diagG),"\t",mean(diagG),"\t",min(diagG),"\t",max(diagG),"\t",var(diagG),
+      "\nOff-diagonal\t",length(offdiagG),"\t",mean(offdiagG),"\t",min(offdiagG),"\t",max(offdiagG),"\t",var(offdiagG))
+  options(digits = 7)
+
+  cat("Correlation of Genomic Inbreeding and Pedigree InbreedingA22\n",
+      "\tCorrelation:",cor(diagA22,diagG),"\n")
+  cat("Correlation Off-diagonal G and A22\n",
+      "\tCorrelation:",cor(offdiagA22,offdiagG),"\n")
+
   iA22 <- solve(A22)
 
-  meanG=mean(G)
-  meandiagG=mean(diag(G))
-  meanAgg=mean(A22)
-  meandiagAgg=mean(diag(A22))
-  cat("Means G is:",meanG,";Means G diag is:",meandiagG,";Means A22 is:",meanAgg,";Means diag A22 is:",meandiagAgg,"\n")
-  beta=(meandiagAgg-meanAgg)/(meandiagG-meanG)
-  alpha=meandiagAgg-meandiagG*beta
+  cat(rep("********",10),"\n")
+  cat("G and A22 Inv matrix")
+  cat(rep("********",10),"\n")
+
+  meanoffdiagG=mean(offdiagG)
+  meandiagG=mean(diagG)
+  meanoffdiagA22=mean(offdiagA22)
+  meandiagA22=mean(diagA22)
+  cat("Means_off_diag\t","Means_diag:\n","G\t",meanoffdiagG,"\t",meandiagG,
+      "\nA22\t",meanoffdiagA22,"\t",meandiagA22,"\n")
+  beta=(meandiagA22 - meanoffdiagA22)/(meandiagG - meanoffdiagG)
+  alpha=meandiagA22-meandiagG*beta
   cat("Adjust G, and the value of alpha and beta is:",alpha,beta,"\n")
-  G=alpha+beta*G # 调整后的G
+  G=alpha+beta*G #
 
   G = a*G + b*A22
 
@@ -117,6 +154,15 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   iG1 <- iG[genotype,genotype]
   rownames(iA22) = colnames(iA22) <- row.names(A22)
   x22 <- tau*iG1 - omega*iA22
+  diagx22 <- diag(x22)
+  offdiagx22 <- c(x22[upper.tri(x22)],x22[lower.tri(x22)])
+  options(digits = 2)
+  cat("Statistic of iG - iA22 Matrix\n","\t\t","N","\t","Mean","\t","Min","\t","Max","\t","Var","\n",
+      "Diagonal\t",length(diagx22),"\t",mean(diagx22),"\t",min(diagx22),"\t",max(diagx22),"\t",var(diagx22),
+      "\nOff-diagonal\t",length(offdiagx22),"\t",mean(offdiagx22),"\t",min(offdiagx22),"\t",max(offdiagx22),"\t",var(offdiagx22))
+  options(digits = 7)
+
+
   iH11 <- iA[nongenotyped,nongenotyped]
   iH21 <- iA[genotype,nongenotyped]
   iH12 <- t(iH21)
