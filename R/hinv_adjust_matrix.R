@@ -42,9 +42,9 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
 
   Time = proc.time()
 
-  cat(rep("********",10),"\n")
+  cat(rep("******",10),"\n")
   cat("G* = a*G + b*A22, a is ",a,"; b is ",b,"\n")
-  cat("iG = tau*G - omega*A22, tau is ",tau,"; omega is ",omega,"\n")
+  cat("iG = tau*G - omega*A22, tau is ",tau,"; omega is ",omega,"\n\n\n")
 
   library(MASS)
   library(sommer)
@@ -58,20 +58,20 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   rownames(iA) <- colnames(iA) <- rownames(A)
 
   Timex = as.matrix(proc.time() - Timex) #end
-  cat("\n", "A matrix takes time =", Timex[3]/60, " minutes \n") #end
+  cat("\n", "A matrix takes time =", Timex[3]/60, " minutes \n\n\n") #end
 
   Timex = proc.time() # begin
   cat("Begin to build G matrix... \n") # begin
   G <- A.mat(M012-1)
 
   Timex = as.matrix(proc.time() - Timex) #end
-  cat("\n", "G matrix takes time =", Timex[3]/60, " minutes \n") #end
+  cat("\n", "G matrix takes time =", Timex[3]/60, " minutes \n\n\n") #end
   diag(G) <- diag(G) + 0.01
   genotyped=rownames(G)
 
   diagG <- diag(G)
 
-  cat(rep("********",10),"\n")
+  cat(rep("******",10),"\n")
   options(digits = 2)
   cat("Frequency - Diagonal of G\n","\tN:\t\t",length(diagG),"\n",
       "\tMean:\t\t",mean(diagG),"\n",
@@ -83,7 +83,7 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   inpedigree=colnames(A)
   nongenotyped=setdiff(inpedigree,genotyped)
 
-  cat("In pedigree nongenotyped length: ",length(nongenotyped),"\n")
+  cat("\n\nIn pedigree nongenotyped length: ",length(nongenotyped),"\n")
 
   genotypednotinpedigree=setdiff(genotyped,inpedigree)
   cat("genotyped not in pedigree",length(genotypednotinpedigree),"\n")
@@ -104,9 +104,9 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   diagA22 <- diag(A22)
   offdiagA22 <- c(A22[upper.tri(A22)],A22[lower.tri(A22)])
   options(digits = 2)
-  cat("Statistic of Rel Matrix A22\n","\t\t","N","\t","Mean","\t","Min","\t","Max","\t","Var","\n",
+  cat("\n\nStatistic of Rel Matrix A22\n","\t\t","N","\t","Mean","\t","Min","\t","Max","\t","Var","\n",
       "Diagonal\t",length(diagA22),"\t",mean(diagA22),"\t",min(diagA22),"\t",max(diagA22),"\t",var(diagA22),
-      "\nOff-diagonal\t",length(offdiagA22),"\t",mean(offdiagA22),"\t",min(offdiagA22),"\t",max(offdiagA22),"\t",var(offdiagA22))
+      "\nOff-diagonal\t",length(offdiagA22),"\t",mean(offdiagA22),"\t",min(offdiagA22),"\t",max(offdiagA22),"\t",var(offdiagA22),"\n\n")
   options(digits = 7)
 
 
@@ -115,19 +115,19 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   options(digits = 2)
   cat("Statistic of Genomic Matrix\n","\t\t","N","\t","Mean","\t","Min","\t","Max","\t","Var","\n",
       "Diagonal\t",length(diagG),"\t",mean(diagG),"\t",min(diagG),"\t",max(diagG),"\t",var(diagG),
-      "\nOff-diagonal\t",length(offdiagG),"\t",mean(offdiagG),"\t",min(offdiagG),"\t",max(offdiagG),"\t",var(offdiagG))
+      "\nOff-diagonal\t",length(offdiagG),"\t",mean(offdiagG),"\t",min(offdiagG),"\t",max(offdiagG),"\t",var(offdiagG),"\n\n")
   options(digits = 7)
 
   cat("Correlation of Genomic Inbreeding and Pedigree InbreedingA22\n",
-      "\tCorrelation:",cor(diagA22,diagG),"\n")
+      "\tCorrelation:",cor(diagA22,diagG),"\n\n\n")
   cat("Correlation Off-diagonal G and A22\n",
-      "\tCorrelation:",cor(offdiagA22,offdiagG),"\n")
+      "\tCorrelation:",cor(offdiagA22,offdiagG),"\n\n\n")
 
   iA22 <- solve(A22)
 
-  cat(rep("********",10),"\n")
-  cat("G and A22 Inv matrix")
-  cat(rep("********",10),"\n")
+  cat(rep("******",10),"\n")
+  cat("G and A22 Inv matrix\n")
+  cat(rep("******",10),"\n")
 
   meanoffdiagG=mean(offdiagG)
   meandiagG=mean(diagG)
@@ -137,7 +137,7 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
       "\nA22\t",meanoffdiagA22,"\t",meandiagA22,"\n")
   beta=(meandiagA22 - meanoffdiagA22)/(meandiagG - meanoffdiagG)
   alpha=meandiagA22-meandiagG*beta
-  cat("Adjust G, and the value of alpha and beta is:",alpha,beta,"\n")
+  cat("Adjust G, and the value of alpha and beta is:",alpha,beta,"\n\n\n")
   G=alpha+beta*G #
 
   G = a*G + b*A22
@@ -149,7 +149,7 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   rownames(iG) = colnames(iG) = genotyped
 
   Timex = as.matrix(proc.time() - Timex) #end
-  cat("\n", "Inverse G matrix takes time =", Timex[3]/60, " minutes \n") #end
+  cat("\n", "Inverse G matrix takes time =", Timex[3]/60, " minutes \n\n\n") #end
 
   iG1 <- iG[genotype,genotype]
   rownames(iA22) = colnames(iA22) <- row.names(A22)
@@ -159,7 +159,7 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   options(digits = 2)
   cat("Statistic of iG - iA22 Matrix\n","\t\t","N","\t","Mean","\t","Min","\t","Max","\t","Var","\n",
       "Diagonal\t",length(diagx22),"\t",mean(diagx22),"\t",min(diagx22),"\t",max(diagx22),"\t",var(diagx22),
-      "\nOff-diagonal\t",length(offdiagx22),"\t",mean(offdiagx22),"\t",min(offdiagx22),"\t",max(offdiagx22),"\t",var(offdiagx22))
+      "\nOff-diagonal\t",length(offdiagx22),"\t",mean(offdiagx22),"\t",min(offdiagx22),"\t",max(offdiagx22),"\t",var(offdiagx22),"\n\n")
   options(digits = 7)
 
 
@@ -170,6 +170,6 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   Hinv <- cbind(rbind(iH11,iH21),rbind(iH12,iH22))
 
   Time = as.matrix(proc.time() - Time) #end
-  cat("\n", "hinv_matrix completed! total time =", Time[3]/60, " minutes \n") #end
+  cat("\n", "hinv_matrix completed! total time =", Time[3]/60, " minutes \n\n\n") #end
   return(Hinv)
 }
