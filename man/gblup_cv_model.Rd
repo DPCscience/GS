@@ -17,3 +17,6 @@ result
 \description{
 Get the arrucacy and other values when run crossvalidation
 }
+\examples{
+1+1
+}

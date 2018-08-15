@@ -4,6 +4,7 @@
 #' @param inv contains three columns that is ginv or ainv: row, col, inverse_values
 #' @return result
 #' @examples
+#' 1+1
 gblup_cv_model <- function(dd,ainv){
   library(asreml)
   names(dd) <- c("ID","y")
@@ -20,7 +21,7 @@ gblup_cv_model <- function(dd,ainv){
     tt = dd
     vv <- dd$ID[w[[i]]]
     vv <- as.character(vv)
-    tt[vv,]$y <- NA #将测试集观测值为NA
+    tt[vv,]$y <- NA
     mod <- asreml(y ~ 1, random=~ giv(ID),ginverse= list(ID=ainv),data=tt,workspace=4e8)
     gblup <- predict(mod,"ID",pworkspace=5e8)$predictions$pval
     rownames(gblup) <- gblup$ID

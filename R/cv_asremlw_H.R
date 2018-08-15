@@ -5,6 +5,7 @@
 #' @param seed set the seed number, default is 123
 #' @return result
 #' @examples
+#' 1+1
 
 cv_asremlw_H <- function(dat,Gmatrix,seed=123){
   library(dplyr)

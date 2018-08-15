@@ -19,3 +19,6 @@ result
 \description{
 Get the cv-result that run asremlw in the working directory
 }
+\examples{
+1+1
+}

@@ -4,7 +4,7 @@
 \alias{hinv_adjust_matrix}
 \title{a Build the H-inverse-matrix from G-inverse-matrix and pedigree-full and pedigree-genotype#'}
 \usage{
-hinv_adjust_matrix(M012, ped_full, wts = c(1, 0, 1, 1))
+hinv_adjust_matrix(M012, ped_full, wts = c(0.95, 0.05, 1, 1))
 }
 \arguments{
 \item{ped_full}{It contains the full pedigree, it has three columns:ID,Sire,Dam}
@@ -45,7 +45,7 @@ data.11.1 <- data.frame(animal,
                         M <- data.11.1[6:14, c(1, 7:16)]
                         rownames(M) <- M[, 1]
                         M1 <- as.matrix(M[, -1])
-                        round(hinv_matrix(M1,ped),2)
+                        round(hinv_adjust_matrix(M1,ped),2)
 
 
 }
