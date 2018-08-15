@@ -4,7 +4,6 @@
 #' @param ped_geno It contains the pedigree that has the genotype, it is a part of the ped_full pedigree
 #' @return The H-inverse-matrix form the formula
 #' @examples
-#' # 这里将iA22是A矩阵提取的A22，进行求逆
 #' # paper:Legarra A, Aguilar I, Misztal I. A relationship matrix including full pedigree and genomic information.[J]. Journal of Dairy Science, 2009, 92(9):4656-63.
 #'ped_full <- data.frame(ID=9:17,Sire=c(1,3,5,7,9,11,11,13,13),Dam=c(2,4,6,8,10,12,4,15,14))
 #'ped_full

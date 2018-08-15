@@ -66,7 +66,7 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
 
   Timex = as.matrix(proc.time() - Timex) #end
   cat("\n", "G matrix takes time =", Timex[3]/60, " minutes \n\n\n") #end
-  diag(G) <- diag(G) + 0.01
+  # diag(G) <- diag(G) + 0.01
   genotyped=rownames(G)
 
   diagG <- diag(G)
