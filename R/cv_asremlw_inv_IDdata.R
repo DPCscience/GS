@@ -1,29 +1,28 @@
-#' Generate the asreml template as and data file using Gmatrix and dat
+#' Get the cv-result that run asremlw in the working directory
 #'
-#' @param dat contins two columns: ID and y
-#' @param Gmatrix That is G-matrix, build by SNP marker, can be A.mat in sommer
+#' @param dat contins two columns: ID and y, that the ginv and the id.csv should
+#' @param Hinv That is Hinv-matrix, is inverse of H-matrix
 #' @param seed set the seed number, default is 123
 #' @return result
 #' @examples
 #' 1+1
 
-cv_asremlw_H <- function(dat,Gmatrix,seed=123){
+cv_asremlw_inv_genotypeID <- function(dat_full,genotypeID,Hinv,seed=123){
   library(dplyr)
   library(data.table)
   library(caret)
   library(synbreed)
+  dat <- dat_full
   dat <- unique(dat)
-  dat <- na.omit(dat)
-  G <- Gmatrix
-  fwrite(as.data.frame(row.names(G)),"id.csv")
-  ginv <- write.relationshipMatrix(G,sorting = "ASReml",type="ginv")
-  fwrite(ginv,"Hinv.giv",col.names = FALSE)
+  ginv <- Hinv
+  fwrite(as.data.frame(rownames(Hinv)),"id.csv")
+  fwrite(as.data.table(ginv),"Hinv.giv",col.names = FALSE)
 
   set.seed(seed)
   # dat <- dat3
+  names(dat) <- c("ID","y")
   tt <- dat
-  dd <- dat
-
+  dd <- genotypeID
   w <- createFolds(1:length(dd$ID),k = 5)
   id1 <- as.character(dd$ID[w[[1]]])
   id2 <- as.character(dd$ID[w[[2]]])
@@ -38,8 +37,7 @@ cv_asremlw_H <- function(dat,Gmatrix,seed=123){
   tt[id3,]$y3 <- NA
   tt[id4,]$y4 <- NA
   tt[id5,]$y5 <- NA
-  fwrite(tt,"dat.csv",na = "*")
+  fwrite(tt,"dat.csv",na = "-999")
   dat.csv <- tt
   Generate_asreml_template(dat.csv)
-  #system("asreml dat_model.as")
 }

@@ -7,11 +7,12 @@
 #' @examples
 #' 1+1
 
-cv_asremlw_H <- function(dat,Gmatrix,seed=123){
+cv_asremlw_H_genotypeID <- function(dat_full,dat_genotype,Gmatrix,seed=123){
   library(dplyr)
   library(data.table)
   library(caret)
   library(synbreed)
+  dat <- dat_full
   dat <- unique(dat)
   dat <- na.omit(dat)
   G <- Gmatrix
@@ -22,7 +23,7 @@ cv_asremlw_H <- function(dat,Gmatrix,seed=123){
   set.seed(seed)
   # dat <- dat3
   tt <- dat
-  dd <- dat
+  dd <- dat_genotype
 
   w <- createFolds(1:length(dd$ID),k = 5)
   id1 <- as.character(dd$ID[w[[1]]])
