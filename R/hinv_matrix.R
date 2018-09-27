@@ -56,6 +56,7 @@ hinv_matrix <- function(M012,ped_full,diagadd=0.001){
   library(MASS)
   library(sommer)
   library(nadiv)
+  diag(G)=diag(G) + diagadd
 
   Timex = proc.time() # begin
   cat("Begin to build A matrix... \n") # begin
@@ -144,7 +145,6 @@ hinv_matrix <- function(M012,ped_full,diagadd=0.001){
   cat("No-Adjust G, the value of alpha and beta is:",alpha,beta,"\n\n\n")
   # G=alpha+beta*G #
   # G = a*G + b*A22
-  diag(G)=diag(G) + diagadd
   Timex = proc.time() # begin
   cat("Begin to inverse G matrix... \n\n") # begin
 
