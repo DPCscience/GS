@@ -56,7 +56,14 @@ hinv_matrix <- function(M012,ped_full,diagadd=0.001){
   library(MASS)
   library(sommer)
   library(nadiv)
+
+  Timex = proc.time() # begin
+  cat("Begin to build G matrix... \n") # begin
+  G <- A.mat(M012-1)
   diag(G)=diag(G) + diagadd
+  Timex = as.matrix(proc.time() - Timex) #end
+  cat("\n", "G matrix takes time =", Timex[3]/60, " minutes \n\n\n") #end
+
 
   Timex = proc.time() # begin
   cat("Begin to build A matrix... \n") # begin
@@ -68,12 +75,7 @@ hinv_matrix <- function(M012,ped_full,diagadd=0.001){
   Timex = as.matrix(proc.time() - Timex) #end
   cat("\n", "A matrix takes time =", Timex[3]/60, " minutes \n\n\n") #end
 
-  Timex = proc.time() # begin
-  cat("Begin to build G matrix... \n") # begin
-  G <- A.mat(M012-1)
 
-  Timex = as.matrix(proc.time() - Timex) #end
-  cat("\n", "G matrix takes time =", Timex[3]/60, " minutes \n\n\n") #end
   genotyped=rownames(G)
   diagG <- diag(G)
   cat(rep("******",10),"\n")
