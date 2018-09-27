@@ -49,10 +49,10 @@
 
 
 
-hinv_matrix <- function(G,ped_full){
-  Time = proc.time()
+hinv_matrix <- function(M012,ped_full,diagadd=0.001){
 
   cat(rep("******",10),"\n")
+  cat("G matrix diagonal add:",diagadd,"\n")
   library(MASS)
   library(sommer)
   library(nadiv)
@@ -68,11 +68,13 @@ hinv_matrix <- function(G,ped_full){
   cat("\n", "A matrix takes time =", Timex[3]/60, " minutes \n\n\n") #end
 
   Timex = proc.time() # begin
-  # diag(G) <- diag(G) + 0.01
+  cat("Begin to build G matrix... \n") # begin
+  G <- A.mat(M012-1)
+
+  Timex = as.matrix(proc.time() - Timex) #end
+  cat("\n", "G matrix takes time =", Timex[3]/60, " minutes \n\n\n") #end
   genotyped=rownames(G)
-
   diagG <- diag(G)
-
   cat(rep("******",10),"\n")
   options(digits = 2)
   cat("Frequency - Diagonal of G\n","\tN:\t\t",length(diagG),"\n",
@@ -139,13 +141,12 @@ hinv_matrix <- function(G,ped_full){
       "\nA22\t",meanoffdiagA22,"\t",meandiagA22,"\n")
   beta=(meandiagA22 - meanoffdiagA22)/(meandiagG - meanoffdiagG)
   alpha=meandiagA22-meandiagG*beta
-  cat("Adjust G, and the value of alpha and beta is:",alpha,beta,"\n\n\n")
+  cat("No-Adjust G, the value of alpha and beta is:",alpha,beta,"\n\n\n")
   # G=alpha+beta*G #
   # G = a*G + b*A22
-
+  diag(G)=diag(G) + diagadd
   Timex = proc.time() # begin
   cat("Begin to inverse G matrix... \n\n") # begin
-  diag(G) = diag(G) + 0.01
 
   iG <- solve(G)
   rownames(iG) = colnames(iG) = genotyped
@@ -155,6 +156,7 @@ hinv_matrix <- function(G,ped_full){
 
   iG1 <- iG[genotype,genotype]
   rownames(iA22) = colnames(iA22) <- row.names(A22)
+  # x22 <- tau*iG1 - omega*iA22
   x22 <- iG1 - iA22
   diagx22 <- diag(x22)
   offdiagx22 <- c(x22[upper.tri(x22)],x22[lower.tri(x22)])
@@ -170,7 +172,8 @@ hinv_matrix <- function(G,ped_full){
   iH12 <- t(iH21)
   iH22 <-  iA[genotype,genotype] + x22
   Hinv <- cbind(rbind(iH11,iH21),rbind(iH12,iH22))
-  return(Hinv)
+
   Time = as.matrix(proc.time() - Time) #end
   cat("\n", "hinv_matrix completed! total time =", Time[3]/60, " minutes \n\n\n") #end
+  return(Hinv)
 }
