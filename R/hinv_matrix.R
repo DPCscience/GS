@@ -145,6 +145,7 @@ hinv_matrix <- function(G,ped_full){
 
   Timex = proc.time() # begin
   cat("Begin to inverse G matrix... \n\n") # begin
+  diag(G) = diag(G) + 0.01
 
   iG <- solve(G)
   rownames(iG) = colnames(iG) = genotyped
