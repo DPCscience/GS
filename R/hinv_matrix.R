@@ -45,7 +45,7 @@
 #'                         rownames(M) <- M[, 1]
 #'                         M012 <- as.matrix(M[, -1])
 #'                         G = sommer::A.mat(M012-1)
-#'                         hinv_matrix(G,ped_full) %>% round(3)
+#'                         round(hinv_matrix(M012,ped_full),3)
 
 
 
