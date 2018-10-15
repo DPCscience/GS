@@ -57,6 +57,12 @@ hinv_adjust_matrix <- function(M012,ped_full,wts=c(0.95,0.05,1,1)){
   iA <- solve(A)
   rownames(iA) <- colnames(iA) <- rownames(A)
 
+  A = makeA(prepPed(ped_full))
+  id=colnames(A)
+  A <- as.matrix(A)
+  iA <- solve(A)
+  rownames(iA) = colnames(iA) = rownames(A) = colnames(A) = id
+
   Timex = as.matrix(proc.time() - Timex) #end
   cat("\n", "A matrix takes time =", Timex[3]/60, " minutes \n\n\n") #end
 

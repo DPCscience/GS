@@ -57,8 +57,9 @@ hinv_matrix <- function(M012,ped_full,diagadd=0.001){
 
   G <- A.mat(M012-1)
   diag(G)=diag(G) + diagadd
+  A = makeA(prepPed(ped_full))
 
-  A <- as.matrix(makeA(prepPed(ped_full)))
+  # A <- as.matrix()
   iA <- solve(A)
   rownames(iA) <- colnames(iA) <- rownames(A)
   idg=rownames(G)
