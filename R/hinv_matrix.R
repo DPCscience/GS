@@ -57,14 +57,12 @@ hinv_matrix <- function(M012,ped_full,diagadd=0.001){
 
   G <- A.mat(M012-1)
   diag(G)=diag(G) + diagadd
-  A = makeA(prepPed(ped_full))
-
-  # A <- as.matrix()
-  iA <- solve(A)
-  rownames(iA) <- colnames(iA) <- rownames(A)
-  idg=rownames(G)
-
+  A = as.matrix(makeA(prepPed(ped_full)))
   id=colnames(A)
+  iA <- solve(A)
+  rownames(iA) = colnames(iA) = rownames(A) = colnames(A) = id
+
+  idg=rownames(G)
   ida=setdiff(id,idg)
   A22 <- A[idg,idg]
   iA22 <- solve(A22)
