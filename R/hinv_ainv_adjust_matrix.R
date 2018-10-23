@@ -52,7 +52,8 @@ hinv_ainv_adjust_matrix <- function(M012,ainv,id_full,id_geno,wts=c(0.95,0.05,1,
   id_geno = as.character(id_geno)
 
   iA <- sparse2mat(ainv)
-  rownames(iA) = colnames(iA) =  id_full
+  rownames(iA) =  id_full
+  colnames(iA) =  id_full
 
   G <- A.mat(M012-1)
 
