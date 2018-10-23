@@ -29,7 +29,7 @@
 #'                         M <- data.11.1[6:14, c(1, 7:16)]
 #'                         rownames(M) <- M[, 1]
 #'                         M1 <- as.matrix(M[, -1])
-#'                         round(hinv_adjust_matrix(M1,ped),2)
+#'                         round(hinv_adjust_matrix(M1,ped),3)
 #'
 #'
 
